@@ -6,8 +6,8 @@ import os
 load_dotenv()
 
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
-# EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
-# EMAIL_PASSWORD =os.getenv("EMAIL_PASSWORD")
+EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
+EMAIL_PASSWORD =os.getenv("EMAIL_PASSWORD")
 
 def get_weather(city): #we are writing a function so we can resue it to accept multiple cities
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=imperial" #this line of code will behave as an endpoint, it will get the data from the url
@@ -19,16 +19,28 @@ def get_weather(city): #we are writing a function so we can resue it to accept m
     else:
         print(f"Failed to retrieve data. {response.status_code}")
 
+def send_email(weather_info):
+    subject = f"Weather Alert for {weather_info['name']}"
+    body = f"""
+    Location: {weather_info['name']}
+    Current Temperature: {weather_info['main']['temp']} °F
+    Conditions: {weather_info['weather'][0]['main']}
+    """
+    message = f"Subject: {subject}\n\n{body}"
 
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        server.starttls()
+        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, message.encode('utf-8'))
+        print("Email sent successfully.")
 
 location = input("What town would you like to choose? ") # asking user for location variable
 weather_info = get_weather(location) #calling our function and passing location
-
 if weather_info:
     print(f"Location: {weather_info['name']}")
     print(f"Current Temperature: {weather_info['main']['temp']}°F")
     print(f"Conditions: {weather_info['weather'][0]['main']}")
-    
+    send_email(weather_info)
     
 
 
