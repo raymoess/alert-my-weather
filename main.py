@@ -25,8 +25,9 @@ location = input("What town would you like to choose? ") # asking user for locat
 weather_info = get_weather(location) #calling our function and passing location
 
 if weather_info:
-    print(f"Location: {weather_info['placeholder']}")
-    print(f"{weather_info['placeholder']}")
+    print(f"Location: {weather_info['name']}")
+    print(f"Current Temperature: {weather_info['main']['temp']}°F")
+    print(f"Conditions: {weather_info['weather'][0]['main']}")
     
     
 
