@@ -2,6 +2,7 @@ import requests
 import smtplib
 from dotenv import load_dotenv
 import os
+import time
 
 load_dotenv()
 
@@ -24,7 +25,7 @@ def send_email(weather_info):
     body = f"""
     Location: {weather_info['name']}
     Current Temperature: {weather_info['main']['temp']} °F
-    Conditions: {weather_info['weather'][0]['main']}
+    Conditions: {weather_info['weather'][0]['main'] }
     """
     message = f"Subject: {subject}\n\n{body}"
 
@@ -34,13 +35,15 @@ def send_email(weather_info):
         server.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, message.encode('utf-8'))
         print("Email sent successfully.")
 
-location = input("What town would you like to choose? ") # asking user for location variable
-weather_info = get_weather(location) #calling our function and passing location
-if weather_info:
-    print(f"Location: {weather_info['name']}")
-    print(f"Current Temperature: {weather_info['main']['temp']}°F")
-    print(f"Conditions: {weather_info['weather'][0]['main']}")
-    send_email(weather_info)
+while True:
+    location = os.getenv("CITY") # asking user for location variable
+    weather_info = get_weather(location) #calling our function and passing location
+    if weather_info:
+        print(f"Location: {weather_info['name']}")
+        print(f"Current Temperature: {weather_info['main']['temp']}°F")
+        print(f"Conditions: {weather_info['weather'][0]['main']}")
+        send_email(weather_info)
+    time.sleep(86400) #time in seconds that it will take to execute the loop again
     
 
 
